@@ -22,7 +22,8 @@ import {
   RefreshCw,
   Download,
   Info,
-  ShoppingCart
+  ShoppingCart,
+  Filter
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 
@@ -39,6 +40,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import TradeDialog from "@/components/screener/TradeDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const Screener = () => {
   const [screenerType, setScreenerType] = useState<'Trend' | 'Momentum' | 'Volatility' | 'Volume' | 'Custom'>('Trend');
@@ -54,6 +56,11 @@ const Screener = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [changeRange, setChangeRange] = useState<[number, number]>([-10, 10]);
   const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [signalFilter, setSignalFilter] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,13 +102,39 @@ const Screener = () => {
     });
   };
 
-  const filteredResults = results.filter(result => 
-    (result.stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    result.stock.name.toLowerCase().includes(searchQuery.toLowerCase())) &&
-    result.stock.price >= priceRange[0] && 
-    result.stock.price <= priceRange[1] &&
-    result.stock.change >= changeRange[0] &&
-    result.stock.change <= changeRange[1]
+  const filteredResults = results.filter(result => {
+    if (searchTerm && !result.stock.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !result.stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    
+    if (statusFilter !== "all" && result.stock.status !== statusFilter) {
+      return false;
+    }
+    
+    if (typeFilter !== "all" && result.stock.type !== typeFilter) {
+      return false;
+    }
+
+    if (signalFilter !== "all" && result.finalSignal !== signalFilter) {
+      return false;
+    }
+    
+    if (result.stock.price < priceRange[0] || result.stock.price > priceRange[1]) {
+      return false;
+    }
+    
+    if (result.stock.change < changeRange[0] || result.stock.change > changeRange[1]) {
+      return false;
+    }
+    
+    return true;
+  });
+
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+  const paginatedResults = filteredResults.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   const handleRefresh = () => {
@@ -284,17 +317,27 @@ const Screener = () => {
                           <div>
                             <h3 className="text-sm font-medium mb-3">Price Range (₹)</h3>
                             <div className="px-2">
-                              <Slider 
-                                defaultValue={[0, 5000]} 
-                                max={5000} 
-                                step={100}
-                                value={[priceRange[0], priceRange[1]]}
-                                onValueChange={handlePriceRangeChange}
-                                className="mb-2"
-                              />
-                              <div className="flex justify-between text-xs text-gray-500">
-                                <span>₹{priceRange[0]}</span>
-                                <span>₹{priceRange[1]}</span>
+                              <div className="flex gap-4 items-center mb-2">
+                                <Input
+                                  type="number"
+                                  value={priceRange[0]}
+                                  onChange={(e) => handlePriceRangeChange([Number(e.target.value), priceRange[1]])}
+                                  className="w-24"
+                                />
+                                <Slider 
+                                  defaultValue={[0, 5000]} 
+                                  max={5000} 
+                                  step={100}
+                                  value={[priceRange[0], priceRange[1]]}
+                                  onValueChange={handlePriceRangeChange}
+                                  className="flex-1"
+                                />
+                                <Input
+                                  type="number"
+                                  value={priceRange[1]}
+                                  onChange={(e) => handlePriceRangeChange([priceRange[0], Number(e.target.value)])}
+                                  className="w-24"
+                                />
                               </div>
                             </div>
                           </div>
@@ -320,7 +363,7 @@ const Screener = () => {
                       </div>
                     )}
                     
-                    <div className="overflow-x-auto mt-4">
+                    <div className="mt-4">
                       {isLoading ? (
                         <div className="py-12 flex items-center justify-center">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -342,7 +385,7 @@ const Screener = () => {
                               </TableRow>
                             </TableHeader>
                             <TableBody>
-                              {filteredResults.length > 0 ? filteredResults.map((result) => (
+                              {paginatedResults.length > 0 ? paginatedResults.map((result) => (
                                 <TableRow 
                                   key={result.id}
                                   className={cn(
@@ -714,6 +757,29 @@ const Screener = () => {
         onClose={() => setIsTradeDialogOpen(false)}
         selectedStocks={getSelectedStocksData()}
       />
+      <div className="mt-4 flex justify-center">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
