@@ -359,6 +359,23 @@ const Screener = () => {
                               </div>
                             </div>
                           </div>
+                          <div>
+                            <h3 className="text-sm font-medium mb-3">Signal Filter</h3>
+                            <Select
+                              value={signalFilter}
+                              onValueChange={(value) => setSignalFilter(value)}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select signal" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">All Signals</SelectItem>
+                                <SelectItem value="Buy">Buy</SelectItem>
+                                <SelectItem value="Short">Short</SelectItem>
+                                <SelectItem value="Wait">Wait</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                       </div>
                     )}
