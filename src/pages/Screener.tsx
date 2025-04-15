@@ -103,8 +103,8 @@ const Screener = () => {
   };
 
   const filteredResults = results.filter(result => {
-    if (searchTerm && !result.stock.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !result.stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (searchQuery && !result.stock.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !result.stock.symbol.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     
