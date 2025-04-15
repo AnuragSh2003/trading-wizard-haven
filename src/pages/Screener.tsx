@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -39,6 +38,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TradeDialog from "@/components/screener/TradeDialog";
 
 const Screener = () => {
   const [screenerType, setScreenerType] = useState<'Trend' | 'Momentum' | 'Volatility' | 'Volume' | 'Custom'>('Trend');
@@ -49,52 +49,43 @@ const Screener = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [indicators, setIndicators] = useState<IndicatorConfig[]>([]);
   const [selectedStocks, setSelectedStocks] = useState<Set<string>>(new Set());
-  
-  // Price filter
+  const [isTradeDialogOpen, setIsTradeDialogOpen] = useState(false);
+
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [changeRange, setChangeRange] = useState<[number, number]>([-10, 10]);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Generate mock stocks and analyze them when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // Generate mock stock data
       const stockData = generateMockStocks(20);
       setStocks(stockData);
       
-      // Get indicators based on selected screener type
       const selectedIndicators = getIndicatorsByType(screenerType);
       setIndicators(selectedIndicators);
       
-      // Analyze stocks based on indicators
       const screeningResults = stockData.map(stock => 
         analyzeStock(stock, selectedIndicators)
       );
       
-      // Sort by score (absolute value, descending)
       screeningResults.sort((a, b) => Math.abs(b.totalScore) - Math.abs(a.totalScore));
       
       setResults(screeningResults);
       setIsLoading(false);
       
-      // Set first result as selected if available
       if (screeningResults.length > 0 && !selectedResult) {
         setSelectedResult(screeningResults[0]);
       }
       
-      // Reset selected stocks when data changes
       setSelectedStocks(new Set());
     };
     
     fetchData();
   }, [screenerType]);
 
-  // Handle screener type change
   const handleScreenerTypeChange = (type: 'Trend' | 'Momentum' | 'Volatility' | 'Volume' | 'Custom') => {
     setScreenerType(type);
     setSelectedResult(null);
@@ -104,7 +95,6 @@ const Screener = () => {
     });
   };
 
-  // Filter results based on search query and price/change filters
   const filteredResults = results.filter(result => 
     (result.stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
     result.stock.name.toLowerCase().includes(searchQuery.toLowerCase())) &&
@@ -114,16 +104,14 @@ const Screener = () => {
     result.stock.change <= changeRange[1]
   );
 
-  // Handle refresh data
   const handleRefresh = () => {
-    setScreenerType(screenerType); // This will trigger useEffect to regenerate data
+    setScreenerType(screenerType);
     toast({
       title: "Data refreshed",
       description: "Latest market data has been loaded",
     });
   };
 
-  // Handle export results
   const handleExport = () => {
     toast({
       title: "Results exported",
@@ -131,9 +119,8 @@ const Screener = () => {
     });
   };
 
-  // Handle stock selection
   const toggleStockSelection = (id: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent row click from selecting the stock
+    event.stopPropagation();
     
     const newSelected = new Set(selectedStocks);
     if (newSelected.has(id)) {
@@ -144,7 +131,6 @@ const Screener = () => {
     setSelectedStocks(newSelected);
   };
 
-  // Handle trade selected stocks
   const handleTradeSelectedStocks = () => {
     if (selectedStocks.size === 0) {
       toast({
@@ -154,38 +140,25 @@ const Screener = () => {
       return;
     }
     
-    const selectedStocksData = results
-      .filter(result => selectedStocks.has(result.id))
-      .map(result => ({
-        symbol: result.stock.symbol,
-        name: result.stock.name,
-        price: result.stock.price,
-        signal: result.finalSignal
-      }));
-      
-    toast({
-      title: `Trading ${selectedStocks.size} stocks`,
-      description: `Preparing order for ${selectedStocksData.map(s => s.symbol).join(', ')}`,
-    });
-    
-    // Reset selection after action
-    setSelectedStocks(new Set());
+    setIsTradeDialogOpen(true);
   };
 
-  // Close selected result panel
+  const getSelectedStocksData = () => {
+    return results.filter(result => selectedStocks.has(result.id));
+  };
+
   const handleCloseDetails = () => {
     setSelectedResult(null);
   };
 
-  // Render signal badge with clearly visible text (not in tooltip)
   const renderSignalBadge = (signal: 'Buy' | 'Short' | 'Wait') => {
     return (
       <Badge 
         className={cn(
           "font-medium py-1 px-2 text-white",
-          signal === "Buy" ? "bg-[#22c55e]" : // Bright green for Buy signals
-          signal === "Short" ? "bg-[#ea384c]" : // Bright red for Short signals
-          "bg-gray-400" // Darker gray for Wait signals for better visibility
+          signal === "Buy" ? "bg-[#22c55e]" : 
+          signal === "Short" ? "bg-[#ea384c]" : 
+          "bg-gray-400"
         )}
       >
         {signal}
@@ -193,12 +166,10 @@ const Screener = () => {
     );
   };
 
-  // Handle price filter change
   const handlePriceRangeChange = (values: number[]) => {
     setPriceRange([values[0], values[1]]);
   };
 
-  // Handle change % filter change
   const handleChangeRangeChange = (values: number[]) => {
     setChangeRange([values[0], values[1]]);
   };
@@ -737,6 +708,12 @@ const Screener = () => {
       </div>
       
       <Footer />
+      
+      <TradeDialog
+        isOpen={isTradeDialogOpen}
+        onClose={() => setIsTradeDialogOpen(false)}
+        selectedStocks={getSelectedStocksData()}
+      />
     </div>
   );
 };
