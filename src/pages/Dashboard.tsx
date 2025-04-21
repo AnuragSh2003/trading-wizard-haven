@@ -162,21 +162,21 @@ const Dashboard = () => {
                     <TabsContent value="daily" className="pt-2">
                       <TradingChart
                         title="Portfolio Performance"
-                        symbol="Combined"
+                        symbol="NIFTY"
                         height={300}
                       />
                     </TabsContent>
                     <TabsContent value="weekly">
                       <TradingChart
                         title="Portfolio Performance"
-                        symbol="Combined"
+                        symbol="NIFTY"
                         height={300}
                       />
                     </TabsContent>
                     <TabsContent value="monthly">
                       <TradingChart
                         title="Portfolio Performance"
-                        symbol="Combined"
+                        symbol="NIFTY"
                         height={300}
                       />
                     </TabsContent>
@@ -192,10 +192,10 @@ const Dashboard = () => {
                   <CardContent className="p-4">
                     <div className="space-y-4">
                       {[
-                        { symbol: "BTC/USDT", side: "BUY", amount: "0.12", price: "$28,493.21", time: "2 min ago" },
-                        { symbol: "ETH/USDT", side: "SELL", amount: "1.5", price: "$1,724.38", time: "15 min ago" },
-                        { symbol: "SOL/USDT", side: "BUY", amount: "12", price: "$94.23", time: "42 min ago" },
-                        { symbol: "BTC/USDT", side: "SELL", amount: "0.08", price: "$28,532.17", time: "1 hour ago" },
+                        { symbol: "RELIANCE", side: "BUY", amount: "10", price: "₹2,493.21", time: "2 min ago" },
+                        { symbol: "HDFCBANK", side: "SELL", amount: "15", price: "₹1,724.38", time: "15 min ago" },
+                        { symbol: "INFY", side: "BUY", amount: "20", price: "₹1,594.23", time: "42 min ago" },
+                        { symbol: "TCS", side: "SELL", amount: "8", price: "₹3,532.17", time: "1 hour ago" },
                       ].map((trade, i) => (
                         <div key={i} className="flex justify-between items-center border-b border-gray-100 last:border-0 pb-3 last:pb-0">
                           <div>
@@ -213,7 +213,7 @@ const Dashboard = () => {
                           </div>
                           <div className="text-right">
                             <div className="font-medium">{trade.price}</div>
-                            <div className="text-xs text-gray-500">{trade.amount} units</div>
+                            <div className="text-xs text-gray-500">{trade.amount} shares</div>
                           </div>
                         </div>
                       ))}
@@ -228,15 +228,15 @@ const Dashboard = () => {
                   <CardContent className="p-4">
                     <div className="space-y-4">
                       {[
-                        { symbol: "BTC/USDT", amount: "0.45", value: "$12,894.21", pnl: "+5.8%" },
-                        { symbol: "ETH/USDT", amount: "8.2", value: "$14,293.38", pnl: "+2.3%" },
-                        { symbol: "SOL/USDT", amount: "124", value: "$11,684.52", pnl: "-1.2%" },
-                        { symbol: "LINK/USDT", amount: "320", value: "$4,128.00", pnl: "+3.6%" },
+                        { symbol: "TATAMOTORS", amount: "45", value: "₹812,894.21", pnl: "+5.8%" },
+                        { symbol: "ICICIBANK", amount: "82", value: "₹714,293.38", pnl: "+2.3%" },
+                        { symbol: "SBIN", amount: "124", value: "₹711,684.52", pnl: "-1.2%" },
+                        { symbol: "BAJFINANCE", amount: "32", value: "₹414,128.00", pnl: "+3.6%" },
                       ].map((position, i) => (
                         <div key={i} className="flex justify-between items-center border-b border-gray-100 last:border-0 pb-3 last:pb-0">
                           <div>
                             <div className="font-medium">{position.symbol}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">{position.amount} units</div>
+                            <div className="text-xs text-gray-500 mt-0.5">{position.amount} shares</div>
                           </div>
                           <div className="text-right">
                             <div className="font-medium">{position.value}</div>
