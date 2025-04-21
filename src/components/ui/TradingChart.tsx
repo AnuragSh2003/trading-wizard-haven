@@ -15,7 +15,7 @@ interface TradingChartProps {
 
 const TradingChart: React.FC<TradingChartProps> = ({
   title = "Price Chart",
-  symbol = "NIFTY50",
+  symbol = "NIFTY",
   className,
   variant = "default",
   height = 300,
@@ -30,8 +30,24 @@ const TradingChart: React.FC<TradingChartProps> = ({
     
     const generateData = () => {
       const newData = [];
-      const basePrice = 22500 + Math.random() * 1000;
-      const volatility = timeframe === "1D" ? 100 : timeframe === "1W" ? 300 : 800;
+      
+      // Different base prices for different symbols
+      let basePrice = 22500; // Default for NIFTY
+      
+      if (symbol === "RELIANCE") basePrice = 2850;
+      else if (symbol === "TCS") basePrice = 3750;
+      else if (symbol === "HDFCBANK") basePrice = 1590;
+      else if (symbol === "INFY") basePrice = 1440;
+      else if (symbol === "ICICIBANK") basePrice = 960;
+      else if (symbol === "HINDUNILVR") basePrice = 2540;
+      else if (symbol === "BAJFINANCE") basePrice = 7080;
+      else if (symbol === "SBIN") basePrice = 610;
+      else if (symbol === "LT") basePrice = 3030;
+      else if (symbol === "BHARTIARTL") basePrice = 1195;
+      else if (symbol === "NIFTY") basePrice = 22500;
+      else basePrice = 1000 + Math.random() * 2000;
+      
+      const volatility = timeframe === "1D" ? basePrice * 0.005 : timeframe === "1W" ? basePrice * 0.015 : basePrice * 0.03;
       const points = timeframe === "1D" ? 24 : timeframe === "1W" ? 7 : 30;
       
       let currentPrice = basePrice;
@@ -72,14 +88,14 @@ const TradingChart: React.FC<TradingChartProps> = ({
     }, 800);
     
     return () => clearTimeout(timer);
-  }, [timeframe]);
+  }, [timeframe, symbol]);
 
   const priceFormatter = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(price);
   };
   
@@ -118,7 +134,7 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 "ml-2 text-sm font-medium flex items-center",
                 isPriceUp ? "text-algo-green-DEFAULT" : "text-algo-red-DEFAULT"
               )}>
-                <span>{isPriceUp ? "+" : ""}{priceChange.toFixed(0)}</span>
+                <span>{isPriceUp ? "+" : ""}{priceChange.toFixed(2)}</span>
                 <span className="ml-1">({isPriceUp ? "+" : ""}{percentChange.toFixed(2)}%)</span>
               </div>
             </div>

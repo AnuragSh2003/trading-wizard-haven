@@ -247,6 +247,59 @@ export const marketApi = {
   
   getNseMostActive: () =>
     api.get<any[]>("/market/nse/most-active"),
+    
+  getNseAdvanceDecline: () =>
+    api.get<any>("/market/nse/advance-decline"),
+    
+  getNseFiiDiiActivity: () =>
+    api.get<any>("/market/nse/fii-dii"),
+    
+  getNseSectorPerformance: () =>
+    api.get<any[]>("/market/nse/sector-performance"),
+};
+
+/**
+ * Backtest API service
+ */
+export const backtestApi = {
+  // Run a backtest with the given parameters
+  runBacktest: (params: {
+    strategy: string;
+    symbols: string[];
+    startDate: string;
+    endDate: string;
+    initialCapital: number;
+    parameters?: Record<string, any>;
+  }) => 
+    api.post<any>("/backtest/run", params),
+  
+  // Get list of available strategies
+  getStrategies: () => 
+    api.get<string[]>("/backtest/strategies"),
+  
+  // Get default parameters for a strategy
+  getStrategyDefaults: (strategyName: string) => 
+    api.get<any>(`/backtest/strategy/${strategyName}/defaults`),
+  
+  // Get historical backtest results
+  getBacktestHistory: () => 
+    api.get<any[]>("/backtest/history"),
+  
+  // Get a specific backtest result by ID
+  getBacktestResult: (id: string) => 
+    api.get<any>(`/backtest/result/${id}`),
+  
+  // Save a backtest result
+  saveBacktestResult: (result: any) => 
+    api.post<any>("/backtest/save", result),
+  
+  // Delete a saved backtest result
+  deleteBacktestResult: (id: string) => 
+    api.delete<void>(`/backtest/delete/${id}`),
+    
+  // Get available symbols for backtesting
+  getAvailableSymbols: () => 
+    api.get<string[]>("/backtest/symbols"),
 };
 
 /**

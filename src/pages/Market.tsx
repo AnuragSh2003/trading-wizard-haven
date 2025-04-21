@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,24 +23,60 @@ import TradingChart from "@/components/ui/TradingChart";
 import MarketTrend from "@/components/ui/MarketTrend";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { marketApi } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const marketData = [
-  { symbol: "BTC", name: "Bitcoin", price: 28350.42, change: 1.24, volume: "$24.8B", marketCap: "$550.2B" },
-  { symbol: "ETH", name: "Ethereum", price: 1750.18, change: 2.87, volume: "$15.3B", marketCap: "$210.5B" },
-  { symbol: "SOL", name: "Solana", price: 93.75, change: 5.62, volume: "$3.2B", marketCap: "$38.9B" },
-  { symbol: "BNB", name: "Binance Coin", price: 241.38, change: -0.82, volume: "$1.5B", marketCap: "$38.2B" },
-  { symbol: "XRP", name: "Ripple", price: 0.62, change: 1.14, volume: "$1.8B", marketCap: "$32.8B" },
-  { symbol: "ADA", name: "Cardano", price: 0.38, change: -1.56, volume: "$420.5M", marketCap: "$13.4B" },
-  { symbol: "DOGE", name: "Dogecoin", price: 0.078, change: 2.38, volume: "$980.6M", marketCap: "$10.9B" },
-  { symbol: "LINK", name: "Chainlink", price: 13.84, change: 3.75, volume: "$725.3M", marketCap: "$7.4B" },
-  { symbol: "AVAX", name: "Avalanche", price: 32.56, change: -0.67, volume: "$510.2M", marketCap: "$7.2B" },
-  { symbol: "DOT", name: "Polkadot", price: 5.93, change: 0.42, volume: "$322.8M", marketCap: "$6.7B" },
+  { symbol: "RELIANCE", name: "Reliance Industries", price: 2850.42, change: 1.24, volume: "₹24.8B", marketCap: "₹550.2B" },
+  { symbol: "TCS", name: "Tata Consultancy Services", price: 3750.18, change: 2.87, volume: "₹15.3B", marketCap: "₹210.5B" },
+  { symbol: "HDFCBANK", name: "HDFC Bank", price: 1593.75, change: 5.62, volume: "₹3.2B", marketCap: "₹38.9B" },
+  { symbol: "INFY", name: "Infosys", price: 1441.38, change: -0.82, volume: "₹1.5B", marketCap: "₹38.2B" },
+  { symbol: "ICICIBANK", name: "ICICI Bank", price: 962.62, change: 1.14, volume: "₹1.8B", marketCap: "₹32.8B" },
+  { symbol: "HINDUNILVR", name: "Hindustan Unilever", price: 2538.38, change: -1.56, volume: "₹420.5M", marketCap: "₹13.4B" },
+  { symbol: "BAJFINANCE", name: "Bajaj Finance", price: 7078.45, change: 2.38, volume: "₹980.6M", marketCap: "₹10.9B" },
+  { symbol: "SBIN", name: "State Bank of India", price: 613.84, change: 3.75, volume: "₹725.3M", marketCap: "₹7.4B" },
+  { symbol: "LT", name: "Larsen & Toubro", price: 3032.56, change: -0.67, volume: "₹510.2M", marketCap: "₹7.2B" },
+  { symbol: "BHARTIARTL", name: "Bharti Airtel", price: 1195.93, change: 0.42, volume: "₹322.8M", marketCap: "₹6.7B" },
 ];
 
 const Market = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
   const [sortBy, setSortBy] = useState("market_cap");
+  const [selectedStock, setSelectedStock] = useState("NIFTY");
+  const { toast } = useToast();
+  
+  const [marketOverview, setMarketOverview] = useState({
+    nifty50: { value: 22735.70, change: 1.2 },
+    sensex: { value: 74261.40, change: 1.1 },
+    bankNifty: { value: 48762.30, change: 0.8 },
+    fiiActivity: "₹1,234.56 Cr (Buy)",
+    diiActivity: "₹876.43 Cr (Buy)",
+    advanceDecline: "1223:765",
+    volatilityIndex: 13.2
+  });
+  
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        // This is a placeholder for real API call
+        // const response = await marketApi.getNseMarketData();
+        // setMarketOverview(response);
+        
+        // For now, we'll use mock data
+        console.log("Fetching NSE market data...");
+      } catch (error) {
+        console.error("Error fetching market data:", error);
+        toast({
+          title: "Failed to fetch market data",
+          description: "Could not retrieve the latest market information.",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    fetchMarketData();
+  }, [toast]);
   
   const filteredMarketData = marketData.filter(item => 
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -70,8 +107,8 @@ const Market = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate-fade-in">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Market Data</h1>
-              <p className="text-muted-foreground mt-1">Real-time market insights and price charts</p>
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">NSE Market Data</h1>
+              <p className="text-muted-foreground mt-1">Real-time market insights and price charts for NSE stocks</p>
             </div>
           </div>
           
@@ -81,7 +118,9 @@ const Market = () => {
               <Card className="shadow-sm overflow-hidden">
                 <CardHeader className="pb-0">
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg font-semibold">Bitcoin (BTC)</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      {selectedStock === "NIFTY" ? "NIFTY 50" : selectedStock}
+                    </CardTitle>
                     <div className="flex gap-3">
                       <div className="flex gap-1.5">
                         <Button 
@@ -147,7 +186,8 @@ const Market = () => {
                 </CardHeader>
                 <CardContent className="p-0">
                   <TradingChart 
-                    title="BTC/USDT" 
+                    title={selectedStock === "NIFTY" ? "NIFTY 50" : selectedStock} 
+                    symbol={selectedStock}
                     height={370}
                   />
                 </CardContent>
@@ -163,48 +203,48 @@ const Market = () => {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">BTC Dominance</p>
-                        <p className="font-semibold">42.8%</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                          +0.8% (24h)
+                        <p className="text-xs text-gray-500 mb-1">NIFTY 50</p>
+                        <p className="font-semibold">{marketOverview.nifty50.value.toLocaleString()}</p>
+                        <p className={`text-xs ${marketOverview.nifty50.change > 0 ? "text-green-600" : "text-red-600"} flex items-center mt-1`}>
+                          {marketOverview.nifty50.change > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                          {marketOverview.nifty50.change > 0 ? "+" : ""}{marketOverview.nifty50.change}% (1D)
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Market Cap</p>
-                        <p className="font-semibold">$1.28T</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                          +2.4% (24h)
+                        <p className="text-xs text-gray-500 mb-1">SENSEX</p>
+                        <p className="font-semibold">{marketOverview.sensex.value.toLocaleString()}</p>
+                        <p className={`text-xs ${marketOverview.sensex.change > 0 ? "text-green-600" : "text-red-600"} flex items-center mt-1`}>
+                          {marketOverview.sensex.change > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                          {marketOverview.sensex.change > 0 ? "+" : ""}{marketOverview.sensex.change}% (1D)
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">24h Volume</p>
-                        <p className="font-semibold">$82.5B</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
-                          <TrendingUp className="h-3 w-3 mr-1" />
-                          +12.6% (24h)
+                        <p className="text-xs text-gray-500 mb-1">BANK NIFTY</p>
+                        <p className="font-semibold">{marketOverview.bankNifty.value.toLocaleString()}</p>
+                        <p className={`text-xs ${marketOverview.bankNifty.change > 0 ? "text-green-600" : "text-red-600"} flex items-center mt-1`}>
+                          {marketOverview.bankNifty.change > 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                          {marketOverview.bankNifty.change > 0 ? "+" : ""}{marketOverview.bankNifty.change}% (1D)
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs text-gray-500 mb-1">Fear & Greed</p>
-                        <p className="font-semibold">72</p>
-                        <p className="text-xs text-green-600 flex items-center mt-1">
+                        <p className="text-xs text-gray-500 mb-1">India VIX</p>
+                        <p className="font-semibold">{marketOverview.volatilityIndex}</p>
+                        <p className="text-xs text-gray-600 flex items-center mt-1">
                           <AlertCircle className="h-3 w-3 mr-1" />
-                          Greed
+                          {marketOverview.volatilityIndex < 15 ? "Low Volatility" : marketOverview.volatilityIndex < 20 ? "Moderate" : "High Volatility"}
                         </p>
                       </div>
                     </div>
                     
                     <div>
-                      <h3 className="text-sm font-medium mb-3">Top Gainers (24h)</h3>
+                      <h3 className="text-sm font-medium mb-3">Top Gainers (1D)</h3>
                       <div className="space-y-2">
                         {[
-                          { symbol: "SOL", name: "Solana", change: "+5.62%" },
-                          { symbol: "LINK", name: "Chainlink", change: "+3.75%" },
-                          { symbol: "ETH", name: "Ethereum", change: "+2.87%" },
+                          { symbol: "HDFCBANK", name: "HDFC Bank", change: "+5.62%" },
+                          { symbol: "SBIN", name: "State Bank of India", change: "+3.75%" },
+                          { symbol: "TCS", name: "Tata Consultancy Services", change: "+2.87%" },
                         ].map((item, i) => (
-                          <div key={i} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50">
+                          <div key={i} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedStock(item.symbol)}>
                             <div className="flex items-center">
                               <div className="h-6 w-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium mr-2">
                                 {item.symbol.slice(0, 2)}
@@ -218,14 +258,14 @@ const Market = () => {
                     </div>
                     
                     <div>
-                      <h3 className="text-sm font-medium mb-3">Top Losers (24h)</h3>
+                      <h3 className="text-sm font-medium mb-3">Top Losers (1D)</h3>
                       <div className="space-y-2">
                         {[
-                          { symbol: "ADA", name: "Cardano", change: "-1.56%" },
-                          { symbol: "BNB", name: "Binance Coin", change: "-0.82%" },
-                          { symbol: "AVAX", name: "Avalanche", change: "-0.67%" },
+                          { symbol: "HINDUNILVR", name: "Hindustan Unilever", change: "-1.56%" },
+                          { symbol: "INFY", name: "Infosys", change: "-0.82%" },
+                          { symbol: "LT", name: "Larsen & Toubro", change: "-0.67%" },
                         ].map((item, i) => (
-                          <div key={i} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50">
+                          <div key={i} className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedStock(item.symbol)}>
                             <div className="flex items-center">
                               <div className="h-6 w-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium mr-2">
                                 {item.symbol.slice(0, 2)}
@@ -255,28 +295,28 @@ const Market = () => {
                   <div className="space-y-3">
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <p className="text-xs text-gray-500">Price (USDT)</p>
-                        <p className="text-xs text-gray-500">Amount (BTC)</p>
-                        <p className="text-xs text-gray-500">Total</p>
+                        <p className="text-xs text-gray-500">Price (₹)</p>
+                        <p className="text-xs text-gray-500">Quantity</p>
+                        <p className="text-xs text-gray-500">Total (₹)</p>
                       </div>
                       <div className="space-y-1">
                         {[
-                          { price: 28450.42, amount: 1.2, total: 34140.50 },
-                          { price: 28420.18, amount: 0.8, total: 22736.14 },
-                          { price: 28410.50, amount: 2.1, total: 59662.05 },
-                          { price: 28400.75, amount: 1.5, total: 42601.13 },
-                          { price: 28385.29, amount: 0.6, total: 17031.17 },
+                          { price: 2850.42, amount: 120, total: 342050.40 },
+                          { price: 2849.18, amount: 80, total: 227934.40 },
+                          { price: 2848.50, amount: 210, total: 598185.00 },
+                          { price: 2847.75, amount: 150, total: 427162.50 },
+                          { price: 2846.29, amount: 60, total: 170777.40 },
                         ].map((item, i) => (
                           <div key={i} className="flex justify-between items-center">
                             <div className="relative w-full h-5">
                               <div 
                                 className="absolute top-0 right-0 bottom-0 bg-red-50" 
-                                style={{ width: `${Math.min(100, item.amount * 20)}%` }}
+                                style={{ width: `${Math.min(100, item.amount / 5)}%` }}
                               ></div>
                               <div className="flex justify-between items-center relative z-10 h-full px-1">
-                                <span className="text-xs text-red-600 font-medium">${item.price.toFixed(2)}</span>
-                                <span className="text-xs">{item.amount.toFixed(2)}</span>
-                                <span className="text-xs text-gray-500">${item.total.toFixed(2)}</span>
+                                <span className="text-xs text-red-600 font-medium">₹{item.price.toFixed(2)}</span>
+                                <span className="text-xs">{item.amount}</span>
+                                <span className="text-xs text-gray-500">₹{item.total.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
@@ -285,7 +325,7 @@ const Market = () => {
                     </div>
                     
                     <div className="flex justify-between items-center py-2 border-y border-gray-100">
-                      <span className="text-base font-semibold">$28,350.42</span>
+                      <span className="text-base font-semibold">₹2,850.42</span>
                       <div className="flex items-center text-xs text-gray-500">
                         <Clock className="h-3 w-3 mr-1" />
                         Last updated: 12:45:08
@@ -295,22 +335,22 @@ const Market = () => {
                     <div className="space-y-2">
                       <div className="space-y-1">
                         {[
-                          { price: 28350.42, amount: 0.5, total: 14175.21 },
-                          { price: 28325.18, amount: 1.8, total: 50985.32 },
-                          { price: 28310.50, amount: 1.2, total: 33972.60 },
-                          { price: 28300.75, amount: 0.9, total: 25470.68 },
-                          { price: 28285.29, amount: 2.2, total: 62227.64 },
+                          { price: 2845.42, amount: 50, total: 142271.00 },
+                          { price: 2844.18, amount: 180, total: 511952.40 },
+                          { price: 2843.50, amount: 120, total: 341220.00 },
+                          { price: 2842.75, amount: 90, total: 255847.50 },
+                          { price: 2841.29, amount: 220, total: 625083.80 },
                         ].map((item, i) => (
                           <div key={i} className="flex justify-between items-center">
                             <div className="relative w-full h-5">
                               <div 
                                 className="absolute top-0 left-0 bottom-0 bg-green-50" 
-                                style={{ width: `${Math.min(100, item.amount * 20)}%` }}
+                                style={{ width: `${Math.min(100, item.amount / 5)}%` }}
                               ></div>
                               <div className="flex justify-between items-center relative z-10 h-full px-1">
-                                <span className="text-xs text-green-600 font-medium">${item.price.toFixed(2)}</span>
-                                <span className="text-xs">{item.amount.toFixed(2)}</span>
-                                <span className="text-xs text-gray-500">${item.total.toFixed(2)}</span>
+                                <span className="text-xs text-green-600 font-medium">₹{item.price.toFixed(2)}</span>
+                                <span className="text-xs">{item.amount}</span>
+                                <span className="text-xs text-gray-500">₹{item.total.toFixed(2)}</span>
                               </div>
                             </div>
                           </div>
@@ -327,12 +367,12 @@ const Market = () => {
             <Card className="shadow-sm">
               <CardHeader className="pb-0">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                  <CardTitle className="text-lg font-semibold">Cryptocurrency Markets</CardTitle>
+                  <CardTitle className="text-lg font-semibold">NSE Stocks</CardTitle>
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                       <Input 
-                        placeholder="Search markets..." 
+                        placeholder="Search stocks..." 
                         className="pl-9 w-full sm:w-[200px]"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -373,7 +413,7 @@ const Market = () => {
                     </thead>
                     <tbody>
                       {sortedMarketData.map((market, i) => (
-                        <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                        <tr key={i} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedStock(market.symbol)}>
                           <td className="p-4 text-gray-500">{i + 1}</td>
                           <td className="p-4">
                             <div className="flex items-center">
@@ -387,7 +427,7 @@ const Market = () => {
                             </div>
                           </td>
                           <td className="p-4 text-right font-medium">
-                            ${market.price < 0.01 
+                            ₹{market.price < 0.01 
                               ? market.price.toFixed(6) 
                               : market.price < 1 
                                 ? market.price.toFixed(4) 
@@ -431,11 +471,11 @@ const Market = () => {
               <CardContent>
                 <div className="space-y-3">
                   {[
-                    { symbol: "SOL/USDT", name: "Solana", price: 93.75, change: 5.62, volume: "$3.2B" },
-                    { symbol: "LINK/USDT", name: "Chainlink", price: 13.84, change: 3.75, volume: "$725.3M" },
-                    { symbol: "ETH/USDT", name: "Ethereum", price: 1750.18, change: 2.87, volume: "$15.3B" },
-                    { symbol: "DOGE/USDT", name: "Dogecoin", price: 0.078, change: 2.38, volume: "$980.6M" },
-                    { symbol: "BTC/USDT", name: "Bitcoin", price: 28350.42, change: 1.24, volume: "$24.8B" },
+                    { symbol: "HDFCBANK", name: "HDFC Bank", price: 1593.75, change: 5.62, volume: "₹3.2B" },
+                    { symbol: "SBIN", name: "State Bank of India", price: 613.84, change: 3.75, volume: "₹725.3M" },
+                    { symbol: "TCS", name: "Tata Consultancy Services", price: 3750.18, change: 2.87, volume: "₹15.3B" },
+                    { symbol: "BAJFINANCE", name: "Bajaj Finance", price: 7078.45, change: 2.38, volume: "₹980.6M" },
+                    { symbol: "RELIANCE", name: "Reliance Industries", price: 2850.42, change: 1.24, volume: "₹24.8B" },
                   ].map((item, i) => (
                     <MarketTrend
                       key={i}
@@ -458,33 +498,33 @@ const Market = () => {
                 <div className="space-y-4">
                   {[
                     {
-                      title: "Bitcoin ETF Approval Expected Soon - What This Means for the Market",
+                      title: "Reserve Bank of India Announces New Policy Changes - Impact on Banking Sector",
                       time: "2 hours ago",
-                      source: "CryptoNews",
-                      category: "Bitcoin"
+                      source: "Economic Times",
+                      category: "Banking"
                     },
                     {
-                      title: "Ethereum's Upcoming Hard Fork: Key Changes and Expected Impact",
+                      title: "Reliance Industries to Invest ₹75,000 Crore in Green Energy",
                       time: "5 hours ago",
-                      source: "BlockchainDaily",
-                      category: "Ethereum"
+                      source: "Business Standard",
+                      category: "Energy"
                     },
                     {
-                      title: "Solana Sets New Transaction Record as DeFi Activity Surges",
+                      title: "Tata Consultancy Services Secures Major Contract with European Financial Group",
                       time: "8 hours ago",
-                      source: "DeFiPulse",
-                      category: "Solana"
+                      source: "Financial Express",
+                      category: "IT"
                     },
                     {
-                      title: "Regulatory Developments: New Framework for Crypto Trading Platforms",
+                      title: "SEBI Introduces New Regulations for Market Participants",
                       time: "12 hours ago",
-                      source: "CoinDesk",
+                      source: "Mint",
                       category: "Regulation"
                     },
                     {
-                      title: "Market Analysis: Why Altcoins Are Outperforming Bitcoin This Week",
+                      title: "Market Analysis: Why Banking Stocks are Outperforming the Broader Market",
                       time: "1 day ago",
-                      source: "CryptoAnalysis",
+                      source: "LiveMint",
                       category: "Market"
                     },
                   ].map((item, i) => (
@@ -513,10 +553,10 @@ const Market = () => {
                     <HelpCircle className="h-6 w-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-medium">New to Cryptocurrency Trading?</h3>
+                    <h3 className="text-lg font-medium">New to NSE Stock Trading?</h3>
                     <p className="text-gray-600 mt-1">
                       Learn the fundamentals of market analysis, chart patterns, and trading strategies 
-                      with our comprehensive guides and tutorials.
+                      with our comprehensive guides and tutorials for Indian markets.
                     </p>
                   </div>
                   <div className="flex-shrink-0">

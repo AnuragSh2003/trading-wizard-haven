@@ -6,6 +6,16 @@ export interface Stock {
   change: number;
   volume: number;
   
+  // NSE specific data
+  isin?: string;
+  series?: string; // EQ, BE, etc.
+  exchange?: 'NSE' | 'BSE';
+  sector?: string;
+  industry?: string;
+  listingDate?: string;
+  faceValue?: number;
+  marketLot?: number;
+  
   // Trend indicators
   sma50: number;
   sma200: number;
@@ -39,6 +49,13 @@ export interface Stock {
   vpt: number;
   cmf: number;
   
+  // Indian market specific indicators
+  deliveryPercentage?: number; // Delivery % to traded quantity
+  fiiDiiActivity?: {
+    fiiNetBuy?: number;
+    diiNetBuy?: number;
+  };
+  
   // Custom indicators
   isGoldenCross: boolean;
   isDeathCross: boolean;
@@ -46,8 +63,15 @@ export interface Stock {
   is52WeekHigh: boolean;
   is52WeekLow: boolean;
   
+  // Valuation metrics for Indian stocks
+  pe?: number; // Price to Earnings
+  pb?: number; // Price to Book
+  eps?: number; // Earnings Per Share
+  dividendYield?: number;
+  marketCap?: number;
+  
   // Additional flexible properties
-  [key: string]: number | string | boolean;
+  [key: string]: number | string | boolean | object | undefined;
 }
 
 export interface ScreenerResult {
@@ -59,4 +83,61 @@ export interface ScreenerResult {
   totalScore: number;
   finalSignal: 'Buy' | 'Short' | 'Wait';
   strength: number;
+}
+
+export interface NseIndexData {
+  name: string;
+  value: number;
+  change: number;
+  percentChange: number;
+  previousClose: number;
+  open: number;
+  high: number;
+  low: number;
+  lastUpdated: string;
+}
+
+export interface BacktestResult {
+  strategy: string;
+  startDate: string;
+  endDate: string;
+  initialCapital: number;
+  finalCapital: number;
+  totalReturn: number;
+  annualizedReturn: number;
+  maxDrawdown: number;
+  sharpeRatio: number;
+  trades: BacktestTrade[];
+  equityCurve: EquityPoint[];
+  statistics: {
+    winRate: number;
+    profitFactor: number;
+    averageWin: number;
+    averageLoss: number;
+    largestWin: number;
+    largestLoss: number;
+    totalTrades: number;
+    winningTrades: number;
+    losingTrades: number;
+  };
+}
+
+export interface BacktestTrade {
+  id: number;
+  symbol: string;
+  entryDate: string;
+  entryPrice: number;
+  exitDate: string;
+  exitPrice: number;
+  quantity: number;
+  pnl: number;
+  pnlPercent: number;
+  type: 'BUY' | 'SELL';
+  exitReason: string;
+}
+
+export interface EquityPoint {
+  date: string;
+  equity: number;
+  drawdown: number;
 }
